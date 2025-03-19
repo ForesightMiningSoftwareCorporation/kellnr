@@ -23,7 +23,7 @@ use sea_orm::sea_query::{Alias, Expr, Query, *};
 use sea_orm::{
     prelude::async_trait::async_trait, query::*, ActiveModelTrait, ColumnTrait, ConnectionTrait,
     DatabaseConnection, EntityTrait, FromQueryResult, InsertResult, ModelTrait, QueryFilter,
-    RelationTrait, Set,
+    RelationTrait, Set
 };
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -952,6 +952,22 @@ impl DbProvider for Database {
 
         Ok(group.is_some())
     }
+
+    async fn is_crate_group_user(&self, crate_name: &NormalizedName, user: &str) -> DbResult<bool> {
+        let user = user::Entity::find()
+        .join(JoinType::InnerJoin, user::Relation::GroupUser.def())
+        .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
+        .join(JoinType::InnerJoin, crate_group::Relation::Group.def())
+        .join(JoinType::InnerJoin, krate::Relation::CrateGroup.def())
+        .filter(
+            Cond::all()
+                .add(krate::Column::Name.eq(crate_name.to_string()))
+                .add(user::Column::Name.eq(user))
+        ).one(&self.db_con)
+        .await?;
+        Ok(user.is_some())
+    }
+
 
     async fn is_group_user(&self, group_name: &str, user: &str) -> DbResult<bool> {
         let user = group_user::Entity::find()

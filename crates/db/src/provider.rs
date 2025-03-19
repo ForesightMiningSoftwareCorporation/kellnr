@@ -79,6 +79,7 @@ pub trait DbProvider: Send + Sync {
     async fn delete_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<()>;
     async fn get_crate_groups(&self, crate_name: &NormalizedName) -> DbResult<Vec<Group>>;
     async fn is_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<bool>;
+    async fn is_crate_group_user(&self, crate_name: &NormalizedName, user: &str) -> DbResult<bool>;
     async fn get_total_unique_crates(&self) -> DbResult<u32>;
     async fn get_total_crate_versions(&self) -> DbResult<u32>;
     async fn get_total_downloads(&self) -> DbResult<u64>;
@@ -447,6 +448,10 @@ pub mod mock {
                 uninplemented!()
             }
             async fn is_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<bool>{
+                uninplemented!()
+            }
+
+            async fn is_crate_group_user(&self, crate_name: &NormalizedName, user: &str) -> DbResult<bool>{
                 uninplemented!()
             }
         }

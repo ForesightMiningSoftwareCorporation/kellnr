@@ -167,6 +167,18 @@ async fn main() {
             get(kellnr_api::list_crate_users),
         )
         .route(
+            "/:crate_name/crate_groups/:group",
+            delete(kellnr_api::remove_crate_group),
+        )
+        .route(
+            "/:crate_name/crate_groups/:group",
+            put(kellnr_api::add_crate_group),
+        )
+        .route(
+            "/:crate_name/crate_groups",
+            get(kellnr_api::list_crate_groups),
+        )
+        .route(
             "/:crate_name/crate_versions",
             get(kellnr_api::list_crate_versions),
         )
