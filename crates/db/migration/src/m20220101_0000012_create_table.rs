@@ -40,7 +40,11 @@ impl MigrationTrait for Migration {
                             .primary_key()
                             .auto_increment(),
                     )
-                    .col(ColumnDef::new(GroupUserIden::GroupFk).big_integer().not_null())
+                    .col(
+                        ColumnDef::new(GroupUserIden::GroupFk)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("group_fk")
@@ -49,7 +53,11 @@ impl MigrationTrait for Migration {
                             .on_update(ForeignKeyAction::NoAction)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
-                    .col(ColumnDef::new(GroupUserIden::UserFk).big_integer().not_null())
+                    .col(
+                        ColumnDef::new(GroupUserIden::UserFk)
+                            .big_integer()
+                            .not_null(),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("user_fk")
@@ -103,7 +111,6 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await
-
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -145,7 +152,6 @@ pub enum UserIden {
     Table,
     Id,
 }
-
 
 #[derive(Iden)]
 pub enum CrateGroupIden {

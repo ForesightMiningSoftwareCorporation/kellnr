@@ -3,7 +3,7 @@ use crate::pub_success::PubDataSuccess;
 use crate::registry_error::RegistryError;
 use crate::search_params::SearchParams;
 use crate::yank_success::YankSuccess;
-use crate::{crate_user, crate_group, crate_version};
+use crate::{crate_group, crate_user, crate_version};
 use anyhow::Result;
 use appstate::AppState;
 use appstate::DbState;
@@ -224,7 +224,6 @@ pub async fn list_crate_groups(
 
     Ok(Json(crate_group::CrateGroupList::from(groups)))
 }
-
 
 pub async fn list_crate_versions(
     Path(crate_name): Path<OriginalName>,

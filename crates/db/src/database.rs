@@ -1,7 +1,7 @@
 use crate::password::{generate_salt, hash_pwd};
 use crate::provider::{DbResult, PrefetchState};
 use crate::tables::init_database;
-use crate::{error::DbError, AuthToken, CrateMeta, CrateSummary, DbProvider, User, Group};
+use crate::{error::DbError, AuthToken, CrateMeta, CrateSummary, DbProvider, Group, User};
 use crate::{ConString, DocQueueEntry};
 use chrono::{DateTime, Utc};
 use common::crate_data::{CrateData, CrateRegistryDep, CrateVersionData};
@@ -15,15 +15,18 @@ use common::publish_metadata::PublishMetadata;
 use common::version::Version;
 use entity::{
     auth_token, crate_author, crate_author_to_crate, crate_category, crate_category_to_crate,
-    crate_index, crate_keyword, crate_keyword_to_crate, crate_meta, crate_user, crate_group, cratesio_crate,
-    cratesio_index, cratesio_meta, doc_queue, krate, owner, prelude::*, session, user, group, group_user,
+    crate_group, crate_index, crate_keyword, crate_keyword_to_crate, crate_meta, crate_user,
+    cratesio_crate, cratesio_index, cratesio_meta, doc_queue, group, group_user, krate, owner,
+    prelude::*, session, user,
 };
-use migration::iden::{AuthTokenIden, CrateIden, CrateMetaIden, CratesIoIden, CratesIoMetaIden, GroupIden};
+use migration::iden::{
+    AuthTokenIden, CrateIden, CrateMetaIden, CratesIoIden, CratesIoMetaIden, GroupIden,
+};
 use sea_orm::sea_query::{Alias, Expr, Query, *};
 use sea_orm::{
     prelude::async_trait::async_trait, query::*, ActiveModelTrait, ColumnTrait, ConnectionTrait,
     DatabaseConnection, EntityTrait, FromQueryResult, InsertResult, ModelTrait, QueryFilter,
-    RelationTrait, Set
+    RelationTrait, Set,
 };
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -841,7 +844,6 @@ impl DbProvider for Database {
         Ok(())
     }
 
-
     async fn add_group_user(&self, group_name: &str, user: &str) -> DbResult<()> {
         let user_fk = user::Entity::find()
             .filter(user::Column::Name.eq(user))
@@ -866,7 +868,6 @@ impl DbProvider for Database {
         GroupUser::insert(u).exec(&self.db_con).await?;
         Ok(())
     }
-
 
     async fn add_owner(&self, crate_name: &NormalizedName, owner: &str) -> DbResult<()> {
         let user_fk = user::Entity::find()
@@ -955,19 +956,19 @@ impl DbProvider for Database {
 
     async fn is_crate_group_user(&self, crate_name: &NormalizedName, user: &str) -> DbResult<bool> {
         let user = user::Entity::find()
-        .join(JoinType::InnerJoin, user::Relation::GroupUser.def())
-        .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
-        .join(JoinType::InnerJoin, crate_group::Relation::Group.def())
-        .join(JoinType::InnerJoin, krate::Relation::CrateGroup.def())
-        .filter(
-            Cond::all()
-                .add(krate::Column::Name.eq(crate_name.to_string()))
-                .add(user::Column::Name.eq(user))
-        ).one(&self.db_con)
-        .await?;
+            .join(JoinType::InnerJoin, user::Relation::GroupUser.def())
+            .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
+            .join(JoinType::InnerJoin, crate_group::Relation::Group.def())
+            .join(JoinType::InnerJoin, krate::Relation::CrateGroup.def())
+            .filter(
+                Cond::all()
+                    .add(krate::Column::Name.eq(crate_name.to_string()))
+                    .add(user::Column::Name.eq(user)),
+            )
+            .one(&self.db_con)
+            .await?;
         Ok(user.is_some())
     }
-
 
     async fn is_group_user(&self, group_name: &str, user: &str) -> DbResult<bool> {
         let user = group_user::Entity::find()
@@ -1063,7 +1064,6 @@ impl DbProvider for Database {
             .collect())
     }
 
-
     async fn get_group_users(&self, group_name: &str) -> DbResult<Vec<User>> {
         let u = user::Entity::find()
             .join(JoinType::InnerJoin, user::Relation::GroupUser.def())
@@ -1128,7 +1128,6 @@ impl DbProvider for Database {
         g.delete(&self.db_con).await?;
         Ok(())
     }
-
 
     async fn change_pwd(&self, user_name: &str, new_pwd: &str) -> DbResult<()> {
         let salt = generate_salt();
@@ -1260,9 +1259,8 @@ impl DbProvider for Database {
         Ok(Group {
             id: g.id as i32,
             name: g.name,
-          })
+        })
     }
-
 
     async fn get_auth_tokens(&self, user_name: &str) -> DbResult<Vec<AuthToken>> {
         let at: Vec<auth_token::Model> = auth_token::Entity::find()
@@ -1338,7 +1336,6 @@ impl DbProvider for Database {
         Ok(())
     }
 
-
     async fn delete_group_user(&self, group_name: &str, user: &str) -> DbResult<()> {
         let user = group_user::Entity::find()
             .join(JoinType::InnerJoin, group_user::Relation::Group.def())
@@ -1356,7 +1353,6 @@ impl DbProvider for Database {
 
         Ok(())
     }
-
 
     async fn add_user(&self, name: &str, pwd: &str, salt: &str, is_admin: bool) -> DbResult<()> {
         let hashed_pwd = hash_pwd(pwd, salt);
@@ -1407,8 +1403,6 @@ impl DbProvider for Database {
             .all(&self.db_con)
             .await?;
 
-
-
         Ok(groups
             .into_iter()
             .map(|g| Group {
@@ -1417,7 +1411,6 @@ impl DbProvider for Database {
             })
             .collect())
     }
-
 
     async fn get_total_unique_crates(&self) -> DbResult<u32> {
         let stmt = Query::select()
@@ -2299,5 +2292,4 @@ impl DbProvider for Database {
 
         Ok(())
     }
-
 }

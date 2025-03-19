@@ -55,9 +55,7 @@ pub async fn add(
 
     new_group.validate()?;
 
-    Ok(db
-        .add_group(&new_group.name)
-        .await?)
+    Ok(db.add_group(&new_group.name).await?)
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

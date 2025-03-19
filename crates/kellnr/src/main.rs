@@ -22,7 +22,7 @@ use tokio::{fs::create_dir_all, net::TcpListener};
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::info;
 use tracing_subscriber::fmt::format;
-use web_ui::{crate_access, session, ui, user, group};
+use web_ui::{crate_access, group, session, ui, user};
 
 #[tokio::main]
 async fn main() {
@@ -93,11 +93,7 @@ async fn main() {
         .route("/delete/:name", delete(group::delete))
         .route("/:group_name/users", get(group::list_users))
         .route("/:group_name/users/:name", put(group::add_user))
-        .route(
-            "/:group_name/users/:name",
-            delete(group::delete_user),
-        );
-
+        .route("/:group_name/users/:name", delete(group::delete_user));
 
     let crate_access = Router::new()
         .route("/:crate_name/users", get(crate_access::list_users))

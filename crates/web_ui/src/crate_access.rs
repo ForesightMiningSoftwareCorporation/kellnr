@@ -4,8 +4,8 @@ use appstate::DbState;
 use axum::extract::{Path, State};
 use axum::Json;
 use common::original_name::OriginalName;
-use registry::crate_user::{CrateUser, CrateUserList};
 use registry::crate_group::{CrateGroup, CrateGroupList};
+use registry::crate_user::{CrateUser, CrateUserList};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
