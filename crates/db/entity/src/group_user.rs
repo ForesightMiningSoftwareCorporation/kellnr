@@ -3,43 +3,43 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "crate_category_to_crate")]
+#[sea_orm(table_name = "group_user")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i64,
-    pub crate_fk: i64,
-    pub category_fk: i64,
+    pub group_fk: i64,
+    pub user_fk: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::crate_category::Entity",
-        from = "Column::CategoryFk",
-        to = "super::crate_category::Column::Id",
+        belongs_to = "super::group::Entity",
+        from = "Column::GroupFk",
+        to = "super::group::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    CrateCategory,
+    Group,
     #[sea_orm(
-        belongs_to = "super::krate::Entity",
-        from = "Column::CrateFk",
-        to = "super::krate::Column::Id",
+        belongs_to = "super::user::Entity",
+        from = "Column::UserFk",
+        to = "super::user::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    Krate,
+    User,
 }
 
-impl Related<super::crate_category::Entity> for Entity {
+impl Related<super::group::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::CrateCategory.def()
+        Relation::Group.def()
     }
 }
 
-impl Related<super::krate::Entity> for Entity {
+impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Krate.def()
+        Relation::User.def()
     }
 }
 

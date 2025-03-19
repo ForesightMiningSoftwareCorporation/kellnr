@@ -202,3 +202,22 @@ pub enum CratesIoMetaIden {
     CratesIoFk,
     Documentation,
 }
+
+#[derive(Iden)]
+pub enum GroupIden {
+    #[iden = "group"]
+    Table,
+    Id,
+    Name,
+}
+
+#[derive(Iden)]
+pub enum GroupUserIden {
+    #[iden = "group_user"]
+    Table,
+    Id,
+    #[iden = "group_fk"]
+    GroupFk,
+    #[iden = "user_fk"]
+    UserFk,
+}
