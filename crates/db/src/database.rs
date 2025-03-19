@@ -15,7 +15,7 @@ use common::publish_metadata::PublishMetadata;
 use common::version::Version;
 use entity::{
     auth_token, crate_author, crate_author_to_crate, crate_category, crate_category_to_crate,
-    crate_index, crate_keyword, crate_keyword_to_crate, crate_meta, crate_user, cratesio_crate,
+    crate_index, crate_keyword, crate_keyword_to_crate, crate_meta, crate_user, crate_group, cratesio_crate,
     cratesio_index, cratesio_meta, doc_queue, krate, owner, prelude::*, session, user, group, group_user,
 };
 use migration::iden::{AuthTokenIden, CrateIden, CrateMetaIden, CratesIoIden, CratesIoMetaIden, GroupIden};
@@ -816,6 +816,32 @@ impl DbProvider for Database {
         Ok(())
     }
 
+    async fn add_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<()> {
+        let group_fk = group::Entity::find()
+            .filter(group::Column::Name.eq(group))
+            .one(&self.db_con)
+            .await?
+            .map(|model| model.id)
+            .ok_or_else(|| DbError::GroupNotFound(group.to_string()))?;
+
+        let crate_fk: i64 = krate::Entity::find()
+            .filter(krate::Column::Name.eq(crate_name.to_string()))
+            .one(&self.db_con)
+            .await?
+            .map(|model| model.id)
+            .ok_or_else(|| DbError::CrateNotFound(crate_name.to_string()))?;
+
+        let u = crate_group::ActiveModel {
+            group_fk: Set(group_fk),
+            crate_fk: Set(crate_fk),
+            ..Default::default()
+        };
+
+        CrateGroup::insert(u).exec(&self.db_con).await?;
+        Ok(())
+    }
+
+
     async fn add_group_user(&self, group_name: &str, user: &str) -> DbResult<()> {
         let user_fk = user::Entity::find()
             .filter(user::Column::Name.eq(user))
@@ -912,6 +938,21 @@ impl DbProvider for Database {
         Ok(user.is_some())
     }
 
+    async fn is_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<bool> {
+        let group = crate_group::Entity::find()
+            .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
+            .join(JoinType::InnerJoin, crate_group::Relation::Group.def())
+            .filter(
+                Cond::all()
+                    .add(krate::Column::Name.eq(crate_name.to_string()))
+                    .add(group::Column::Name.eq(group)),
+            )
+            .one(&self.db_con)
+            .await?;
+
+        Ok(group.is_some())
+    }
+
     async fn is_group_user(&self, group_name: &str, user: &str) -> DbResult<bool> {
         let user = group_user::Entity::find()
             .join(JoinType::InnerJoin, group_user::Relation::Group.def())
@@ -989,6 +1030,23 @@ impl DbProvider for Database {
             })
             .collect())
     }
+
+    async fn get_crate_groups(&self, crate_name: &NormalizedName) -> DbResult<Vec<Group>> {
+        let u = group::Entity::find()
+            .join(JoinType::InnerJoin, group::Relation::CrateGroup.def())
+            .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
+            .filter(Expr::col((CrateIden::Table, krate::Column::Name)).eq(crate_name.to_string()))
+            .all(&self.db_con)
+            .await?;
+
+        Ok(u.into_iter()
+            .map(|u| Group {
+                id: u.id as i32,
+                name: u.name,
+            })
+            .collect())
+    }
+
 
     async fn get_group_users(&self, group_name: &str) -> DbResult<Vec<User>> {
         let u = user::Entity::find()
@@ -1245,6 +1303,25 @@ impl DbProvider for Database {
 
         Ok(())
     }
+
+    async fn delete_crate_group(&self, crate_name: &NormalizedName, group: &str) -> DbResult<()> {
+        let group = crate_group::Entity::find()
+            .join(JoinType::InnerJoin, crate_group::Relation::Krate.def())
+            .join(JoinType::InnerJoin, crate_group::Relation::Group.def())
+            .filter(
+                Cond::all()
+                    .add(krate::Column::Name.eq(crate_name.to_string()))
+                    .add(group::Column::Name.eq(group)),
+            )
+            .one(&self.db_con)
+            .await?
+            .ok_or_else(|| DbError::GroupNotFound(group.to_string()))?;
+
+        group.delete(&self.db_con).await?;
+
+        Ok(())
+    }
+
 
     async fn delete_group_user(&self, group_name: &str, user: &str) -> DbResult<()> {
         let user = group_user::Entity::find()

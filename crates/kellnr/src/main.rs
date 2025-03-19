@@ -106,6 +106,12 @@ async fn main() {
             "/:crate_name/users/:name",
             delete(crate_access::delete_user),
         )
+        .route("/:crate_name/groups", get(crate_access::list_groups))
+        .route("/:crate_name/groups/:name", put(crate_access::add_group))
+        .route(
+            "/:crate_name/groups/:name",
+            delete(crate_access::delete_group),
+        )
         .route(
             "/:crate_name/access_data",
             get(crate_access::get_access_data),

@@ -13,8 +13,16 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::crate_group::Entity")]
+    CrateGroup,
     #[sea_orm(has_many = "super::group_user::Entity")]
     GroupUser,
+}
+
+impl Related<super::crate_group::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::CrateGroup.def()
+    }
 }
 
 impl Related<super::group_user::Entity> for Entity {

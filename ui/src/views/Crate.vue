@@ -9,25 +9,49 @@
     </p>
 
     <div class="tabSwitch paragraph">
-      <div v-if="selected_version.readme" class="tab clickable" :class="tab === 'readme' ? 'activeTab' : ''"
-        @click="changeTab('readme')">
+      <div
+        v-if="selected_version.readme"
+        class="tab clickable"
+        :class="tab === 'readme' ? 'activeTab' : ''"
+        @click="changeTab('readme')"
+      >
         Readme
       </div>
-      <div class="tab clickable" :class="tab === 'meta' ? 'activeTab' : ''" @click="changeTab('meta')">
+      <div
+        class="tab clickable"
+        :class="tab === 'meta' ? 'activeTab' : ''"
+        @click="changeTab('meta')"
+      >
         About
       </div>
-      <div class="tab clickable" :class="tab === 'deps' ? 'activeTab' : ''" @click="changeTab('deps')">
+      <div
+        class="tab clickable"
+        :class="tab === 'deps' ? 'activeTab' : ''"
+        @click="changeTab('deps')"
+      >
         Dependencies
       </div>
-      <div class="tab clickable" :class="tab === 'versions' ? 'activeTab' : ''" @click="changeTab('versions')">
+      <div
+        class="tab clickable"
+        :class="tab === 'versions' ? 'activeTab' : ''"
+        @click="changeTab('versions')"
+      >
         Versions
       </div>
-      <div v-if="store.loggedInUserIsAdmin" class="tab clickable" :class="tab === 'crateSettings' ? 'activeTab' : ''"
-        @click="changeTab('crateSettings')">
+      <div
+        v-if="store.loggedInUserIsAdmin"
+        class="tab clickable"
+        :class="tab === 'crateSettings' ? 'activeTab' : ''"
+        @click="changeTab('crateSettings')"
+      >
         Settings
       </div>
-      <div v-if="store.loggedInUserIsAdmin" class="tab clickable" :class="tab === 'administrate' ? 'activeTab' : ''"
-        @click="changeTab('administrate')">
+      <div
+        v-if="store.loggedInUserIsAdmin"
+        class="tab clickable"
+        :class="tab === 'administrate' ? 'activeTab' : ''"
+        @click="changeTab('administrate')"
+      >
         Admin
       </div>
     </div>
@@ -40,29 +64,51 @@
 
         <div v-if="tab === 'versions'">
           <div class="">
-            <Version v-for="version in crate.versions" :key="version.version" :name="crate.name"
-              :version="version.version" :last_updated="version.created" :downloads="version.downloads.toString()" />
+            <Version
+              v-for="version in crate.versions"
+              :key="version.version"
+              :name="crate.name"
+              :version="version.version"
+              :last_updated="version.created"
+              :downloads="version.downloads.toString()"
+            />
           </div>
         </div>
 
         <div v-if="tab === 'deps'">
           <div class="" v-if="sortedDeps.length > 0">
-            <Dependency v-for="dep in sortedDeps" :key="dep.name" :name="dep.name" :version="dep.version_req"
-              :registry="dep.registry">
+            <Dependency
+              v-for="dep in sortedDeps"
+              :key="dep.name"
+              :name="dep.name"
+              :version="dep.version_req"
+              :registry="dep.registry"
+            >
             </Dependency>
           </div>
 
           <div class="" v-if="sortedDevDeps.length > 0">
             <h2 class="k-h3">Development Dependencies</h2>
-            <Dependency v-for="dep in sortedDevDeps" :key="dep.name" :name="dep.name" :version="dep.version_req"
-              :registry="dep.registry">
+            <Dependency
+              v-for="dep in sortedDevDeps"
+              :key="dep.name"
+              :name="dep.name"
+              :version="dep.version_req"
+              :registry="dep.registry"
+            >
             </Dependency>
           </div>
 
           <div class="" v-if="sortedDevDeps.length > 0">
             <h2 class="k-h3">Build Dependencies</h2>
-            <Dependency v-for="dep in sortedBuildDeps" :key="dep.name" :name="dep.name" :version="dep.version_req"
-              :registry="dep.registry" :desc="dep.description">
+            <Dependency
+              v-for="dep in sortedBuildDeps"
+              :key="dep.name"
+              :name="dep.name"
+              :version="dep.version_req"
+              :registry="dep.registry"
+              :desc="dep.description"
+            >
             </Dependency>
           </div>
         </div>
@@ -70,29 +116,65 @@
         <div v-if="tab === 'meta'" class="metaTab">
           <div class="glass">
             <div class="iconElements">
-              <IconElement icon="fas fa-link" title="Homepage" v-if="crate.homepage != null">
+              <IconElement
+                icon="fas fa-link"
+                title="Homepage"
+                v-if="crate.homepage != null"
+              >
                 <a :href="crate.homepage" class="link" target="_blank">{{
                   crate.homepage
                 }}</a>
               </IconElement>
-              <IconElement icon="fas fa-balance-scale" title="License" v-if="selected_version.license != null">
+              <IconElement
+                icon="fas fa-balance-scale"
+                title="License"
+                v-if="selected_version.license != null"
+              >
                 {{ selected_version.license }}
               </IconElement>
-              <IconElement icon="fab fa-github" title="Repository" v-if="crate.repository != null">
+              <IconElement
+                icon="fab fa-github"
+                title="Repository"
+                v-if="crate.repository != null"
+              >
                 <a :href="crate.repository" class="link" target="_blank">{{
                   crate.repository
                 }}</a>
               </IconElement>
-              <IconElement icon="fas fa-trash-alt" title="Yanked" v-if="selected_version.yanked === true">
+              <IconElement
+                icon="fas fa-trash-alt"
+                title="Yanked"
+                v-if="selected_version.yanked === true"
+              >
                 Yes
               </IconElement>
             </div>
             <div class="iconLists">
-              <IconList :list="crate.authors" :icon="'fas fa-user'" :title="'Authors'" />
-              <IconList :list="crate.categories" :icon="'fas fa-cubes'" :title="'Categories'" />
-              <IconList :list="flattenedFeatures" :icon="'fas fa-cog'" :title="'Features'" />
-              <IconList :list="crate.keywords" :icon="'fas fa-key'" :title="'Keywords'" />
-              <IconList :list="sortedOwners" :icon="'fas fa-user'" :title="'Owners'" />
+              <IconList
+                :list="crate.authors"
+                :icon="'fas fa-user'"
+                :title="'Authors'"
+              />
+              <IconList
+                :list="crate.categories"
+                :icon="'fas fa-cubes'"
+                :title="'Categories'"
+              />
+              <IconList
+                :list="flattenedFeatures"
+                :icon="'fas fa-cog'"
+                :title="'Features'"
+              />
+              <IconList
+                :list="crate.keywords"
+                :icon="'fas fa-key'"
+                :title="'Keywords'"
+              />
+              <IconList
+                :list="sortedOwners"
+                :icon="'fas fa-user'"
+                :title="'Owners'"
+              />
             </div>
           </div>
         </div>
@@ -103,45 +185,111 @@
             <form>
               <div class="field">
                 <label class="checkbox">
-                  <input type="checkbox" v-model="is_download_restricted" /> Crate users only are allowed to download
+                  <input type="checkbox" v-model="is_download_restricted" />
+                  Crate users or groups only are allowed to download
                 </label>
               </div>
-              <status-notification :status="changeCrateAccessStatus" @update:clear="changeCrateAccessStatus = $event">
+              <status-notification
+                :status="changeCrateAccessStatus"
+                @update:clear="changeCrateAccessStatus = $event"
+              >
                 {{ changeCrateAccessMsg }}
               </status-notification>
               <div class="control">
-                <button class="button is-info" @click.prevent="setCrateAccessData">Change crate access rules</button>
+                <button
+                  class="button is-info"
+                  @click.prevent="setCrateAccessData"
+                >
+                  Change crate access rules
+                </button>
               </div>
             </form>
           </div>
           <div class="glass">
             <h2 class="k-h2">Crate users</h2>
             <template v-for="user in crateUsers" :key="user.login">
-              <div class="glass">
+              <div class="glass crateMember">
                 <span class="userName">{{ user.login }}</span>
                 <span class="tag is-danger is-light">
                   <a @click="deleteCrateUser(user.login)">Delete</a>
                 </span>
               </div>
             </template>
-            <status-notification :status="deleteUserStatus" @update:clear="deleteUserStatus = $event">
+            <status-notification
+              :status="deleteUserStatus"
+              @update:clear="deleteUserStatus = $event"
+            >
               {{ deleteUserMsg }}
             </status-notification>
             <h3 class="k-h3">Add crate user</h3>
             <form>
               <div class="field">
                 <div class="control is-expanded has-icons-left">
-                  <input class="input is-info" v-model="crateUserName" placeholder="Username" type="text" />
+                  <input
+                    class="input is-info"
+                    v-model="crateUserName"
+                    placeholder="Username"
+                    type="text"
+                  />
                   <span class="icon is-small is-left">
                     <i class="fas fa-user"></i>
                   </span>
                 </div>
               </div>
-              <status-notification :status="addCrateUserStatus" @update:clear="addCrateUserStatus = $event">
+              <status-notification
+                :status="addCrateUserStatus"
+                @update:clear="addCrateUserStatus = $event"
+              >
                 {{ addCrateUserMsg }}
               </status-notification>
               <div class="control">
-                <button class="button is-info" @click.prevent="addCrateUser">Add</button>
+                <button class="button is-info" @click.prevent="addCrateUser">
+                  Add
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="glass">
+            <h2 class="k-h2">Crate groups</h2>
+            <template v-for="group in crateGroups" :key="group.login">
+              <div class="glass crateMember">
+                <span class="groupName">{{ group.name }}</span>
+                <span class="tag is-danger is-light">
+                  <a @click="deleteCrateGroup(group.name)">Delete</a>
+                </span>
+              </div>
+            </template>
+            <status-notification
+              :status="deleteGroupStatus"
+              @update:clear="deleteGroupStatus = $event"
+            >
+              {{ deleteGroupMsg }}
+            </status-notification>
+            <h3 class="k-h3">Add crate group</h3>
+            <form>
+              <div class="field">
+                <div class="control is-expanded has-icons-left">
+                  <input
+                    class="input is-info"
+                    v-model="crateGroupName"
+                    placeholder="Groupname"
+                    type="text"
+                  />
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-user-group"></i>
+                  </span>
+                </div>
+              </div>
+              <status-notification
+                :status="addCrateGroupStatus"
+                @update:clear="addCrateGroupStatus = $event"
+              >
+                {{ addCrateGroupMsg }}
+              </status-notification>
+              <div class="control">
+                <button class="button is-info" @click.prevent="addCrateGroup">
+                  Add
+                </button>
               </div>
             </form>
           </div>
@@ -151,22 +299,35 @@
           <div class="glass">
             <h2 class="k-h2">Delete Crate Version</h2>
             <div class="notification is-light is-danger">
-              <strong>Warning:</strong> Deleting a crate version breaks all crates that depend on it!
+              <strong>Warning:</strong> Deleting a crate version breaks all
+              crates that depend on it!
             </div>
             <div class="paragraph">
-              Instead of deleting the crate, think about <a
-                href="https://doc.rust-lang.org/cargo/commands/cargo-yank.html" class="link">yanking</a> it instead,
-              which
-              does not break crates that depend on it.
+              Instead of deleting the crate, think about
+              <a
+                href="https://doc.rust-lang.org/cargo/commands/cargo-yank.html"
+                class="link"
+                >yanking</a
+              >
+              it instead, which does not break crates that depend on it.
             </div>
             <br />
             <div>
               <span class="control">
-                <button class="button is-danger" @click="deleteVersion(crate.name, selected_version.version)">Delete
-                  Version</button>
+                <button
+                  class="button is-danger"
+                  @click="deleteVersion(crate.name, selected_version.version)"
+                >
+                  Delete Version
+                </button>
               </span>
               <span id="deleteCrate" class="control">
-                <button class="button is-danger" @click="deleteCrate(crate.name)">Delete Crate</button>
+                <button
+                  class="button is-danger"
+                  @click="deleteCrate(crate.name)"
+                >
+                  Delete Crate
+                </button>
               </span>
             </div>
           </div>
@@ -174,37 +335,50 @@
       </div>
 
       <div id="infos" class="glass">
-        <crate-sidebar-element icon="fa-code" header="Install" class="bottomBorder">
+        <crate-sidebar-element
+          icon="fa-code"
+          header="Install"
+          class="bottomBorder"
+        >
           <div class="clickable tooltip" @click="copyTomlToClipboard()">
             {{ crate.name }} = "{{ selected_version.version }}"
             <span class="tooltiptext">Copy to clipboard</span>
           </div>
         </crate-sidebar-element>
 
-        <crate-sidebar-element icon="fa-calendar-alt" header="Uploaded" class="bottomBorder">
+        <crate-sidebar-element
+          icon="fa-calendar-alt"
+          header="Uploaded"
+          class="bottomBorder"
+        >
           <div class="tooltip">
             {{ humanizedLastUpdated }}
             <span class="tooltiptext">{{ crate.last_updated }}</span>
           </div>
         </crate-sidebar-element>
 
-        <crate-sidebar-element icon="fa-book" header="Documentation" class="bottomBorder">
+        <crate-sidebar-element
+          icon="fa-book"
+          header="Documentation"
+          class="bottomBorder"
+        >
           <div class="docs" @click="openDocsPage()">
             <div v-if="docLink">
-              <div class="clickable">{{ crate.name }} ({{ selected_version.version }})</div>
+              <div class="clickable">
+                {{ crate.name }} ({{ selected_version.version }})
+              </div>
             </div>
             <div v-else>
               <router-link class="clickable" to="/publishdocs">Add</router-link>
             </div>
           </div>
-          <div class="buildDocs clickable" v-if="showBuildRustdoc()"
-            @click="buildDoc(crate.name, selected_version.version)">
-            <span v-if="docLink">
-              re-build
-            </span>
-            <span v-else>
-              build
-            </span>
+          <div
+            class="buildDocs clickable"
+            v-if="showBuildRustdoc()"
+            @click="buildDoc(crate.name, selected_version.version)"
+          >
+            <span v-if="docLink"> re-build </span>
+            <span v-else> build </span>
           </div>
         </crate-sidebar-element>
 
@@ -229,9 +403,28 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import CrateSidebarElement from "../components/CrateSidebarElement.vue";
-import { defaultCrateData, defaultCrateAccessData, defaultCrateVersionData } from "../types/crate_data";
-import type { CrateData, CrateAccessData, CrateVersionData, CrateRegistryDep } from "../types/crate_data";
-import { CRATE_DATA, CRATE_DELETE_VERSION, CRATE_DELETE_ALL, DOCS_BUILD, CRATE_USERS, CRATE_USER, CRATE_ACCESS_DATA } from "../remote-routes";
+import {
+  defaultCrateData,
+  defaultCrateAccessData,
+  defaultCrateVersionData,
+} from "../types/crate_data";
+import type {
+  CrateData,
+  CrateAccessData,
+  CrateVersionData,
+  CrateRegistryDep,
+} from "../types/crate_data";
+import {
+  CRATE_DATA,
+  CRATE_DELETE_VERSION,
+  CRATE_DELETE_ALL,
+  DOCS_BUILD,
+  CRATE_USERS,
+  CRATE_USER,
+  CRATE_ACCESS_DATA,
+  CRATE_GROUPS,
+  CRATE_GROUP,
+} from "../remote-routes";
 import Readme from "../components/Readme.vue";
 import { useStore } from "../store/store";
 
@@ -239,49 +432,61 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 
 const crate = ref<CrateData>(defaultCrateData);
-const router = useRouter()
-const route = useRoute()
-const selected_version = ref<CrateVersionData>(defaultCrateVersionData)
-const defaultTab = ref<string>("meta")
+const router = useRouter();
+const route = useRoute();
+const selected_version = ref<CrateVersionData>(defaultCrateVersionData);
+const defaultTab = ref<string>("meta");
 const tab = ref(defaultTab);
 const store = useStore();
 
 const crate_access = ref<CrateAccessData>(defaultCrateAccessData);
 const is_download_restricted = ref(false);
-const crateUsers = ref([])
-const crateUserName = ref("")
-const addCrateUserStatus = ref("")
-const addCrateUserMsg = ref("")
-const deleteCrateUserStatus = ref("")
-const deleteCrateUserMsg = ref("")
+const crateUsers = ref([]);
+const crateUserName = ref("");
+const crateGroups = ref([]);
+const crateGroupName = ref("");
+const addCrateUserStatus = ref("");
+const addCrateUserMsg = ref("");
+const deleteCrateUserStatus = ref("");
+const deleteCrateUserMsg = ref("");
+const addCrateGroupStatus = ref("");
+const addCrateGroupMsg = ref("");
+const deleteCrateGroupStatus = ref("");
+const deleteCrateGroupMsg = ref("");
 
 const docLink = computed(() => {
   return selected_version.value.documentation;
-})
+});
 
 const humanizedLastUpdated = computed(() => {
   return dayjs.utc(crate.value.last_updated).fromNow();
-})
+});
 
 const sortedDeps = computed(() => {
-  const normalDeps = selected_version.value.dependencies.filter((dep: CrateRegistryDep) => {
-    return dep.kind == "normal";
-  });
+  const normalDeps = selected_version.value.dependencies.filter(
+    (dep: CrateRegistryDep) => {
+      return dep.kind == "normal";
+    },
+  );
   return sortByName(normalDeps);
 });
 
 const sortedDevDeps = computed(() => {
-  const devDeps = selected_version.value.dependencies.filter((dep: CrateRegistryDep) => {
-    return dep.kind == "dev";
-  });
+  const devDeps = selected_version.value.dependencies.filter(
+    (dep: CrateRegistryDep) => {
+      return dep.kind == "dev";
+    },
+  );
 
   return sortByName(devDeps);
 });
 
 const sortedBuildDeps = computed(() => {
-  const buildDeps = selected_version.value.dependencies.filter((dep: CrateRegistryDep) => {
-    return dep.kind == "build";
-  });
+  const buildDeps = selected_version.value.dependencies.filter(
+    (dep: CrateRegistryDep) => {
+      return dep.kind == "build";
+    },
+  );
 
   return sortByName(buildDeps);
 });
@@ -375,45 +580,119 @@ function getCrateUsers() {
     .catch((error) => {
       console.log(error);
     });
-};
+}
+function addCrateGroup() {
+  axios
+    .put(CRATE_GROUP(crate.value.name, crateGroupName.value))
+    .then((res) => {
+      if (res.status == 200) {
+        addCrateGroupStatus.value = "Success";
+        addCrateGroupMsg.value = "Crate group successfully added.";
+        // Update group list
+        getCrateGroups();
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        addCrateGroupStatus.value = "Error";
+        addCrateGroupMsg.value = "Crate group could not be added.";
+
+        if (error.response.status == 404) {
+          // "Unauthorized. Login first."
+          router.push("/login");
+        } else if (error.response.status == 500) {
+          addCrateGroupMsg.value = "Crate group could not be added";
+        } else {
+          addCrateGroupMsg.value = "Unknown error";
+        }
+      }
+    });
+}
+
+function deleteCrateGroup(name: string) {
+  if (confirm('Delete crate group "' + name + '"?')) {
+    axios
+      .delete(CRATE_GROUP(crate.value.name, name))
+      .then((res) => {
+        if (res.status == 200) {
+          deleteCrateGroupStatus.value = "Success";
+          deleteCrateGroupMsg.value = "Crate group successfully deleted.";
+          // Update group list
+          getCrateGroups();
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          deleteCrateGroupStatus.value = "Error";
+          deleteCrateGroupMsg.value = "Crate group could not be deleted.";
+
+          if (error.response.status == 404) {
+            // "Unauthorized. Login first."
+            router.push("/login");
+          } else if (error.response.status == 500) {
+            deleteCrateGroupMsg.value = "Crate group could not be deleted";
+          } else {
+            deleteCrateGroupMsg.value = "Unknown error";
+          }
+        }
+      });
+  }
+}
+
+function getCrateGroups() {
+  axios
+    // disable caching to get updated token list (TS doesn't recognize cache option)
+    // @ts-ignore
+    .get(CRATE_GROUPS(crate.value.name), { cache: false })
+    .then((res) => {
+      if (res.status == 200) {
+        crateGroups.value = res.data.groups;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 function deleteVersion(crate: string, version: string) {
   if (confirm('Delete "' + crate + '" version "' + version + '"?')) {
-    axios.delete(CRATE_DELETE_VERSION,
-      {
+    axios
+      .delete(CRATE_DELETE_VERSION, {
         params: {
           name: crate,
-          version: version
-        }
-      }
-    ).then((_response) => {
-      router.push({ name: "Crates" })
-    }).catch((error) => {
-      console.log(error);
-    });
+          version: version,
+        },
+      })
+      .then((_response) => {
+        router.push({ name: "Crates" });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 
 function deleteCrate(crate: string) {
   if (confirm('Delete all versions of "' + crate + '"?')) {
-    axios.delete(CRATE_DELETE_ALL,
-      {
+    axios
+      .delete(CRATE_DELETE_ALL, {
         params: {
           name: crate,
-        }
-      }
-    ).then((_response) => {
-      router.push({ name: "Crates" })
-    }).catch((error) => {
-      console.log(error);
-    });
+        },
+      })
+      .then((_response) => {
+        router.push({ name: "Crates" });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 }
 
 function showBuildRustdoc(): boolean {
   // Show the option to build the docs, if the current logged-in user is and admin
   if (store.loggedInUserIsAdmin) {
-    return true
+    return true;
   }
 
   // Show the option to build the docs, if the current logged-in user owns the crate
@@ -421,19 +700,21 @@ function showBuildRustdoc(): boolean {
 }
 
 function buildDoc(crate: string, version: string) {
-  axios.post(DOCS_BUILD, null, { params: { package: crate, version: version } })
+  axios
+    .post(DOCS_BUILD, null, { params: { package: crate, version: version } })
     .then((_res) => {
-      router.push({ name: "DocQueue" })
+      router.push({ name: "DocQueue" });
     })
     .catch((error) => {
-      console.log(error)
-    })
+      console.log(error);
+    });
 }
 
 function changeTab(newTab: string) {
   if (newTab === "crateSettings") {
     getCrateAccessData();
     getCrateUsers();
+    getCrateGroups();
   }
   tab.value = newTab;
 }
@@ -456,12 +737,14 @@ function getCrateData(name: string, version?: string) {
     .then((response) => {
       crate.value = response.data;
       version = version ?? crate.value.max_version;
-      selected_version.value = crate.value.versions.find((cvd: CrateVersionData) => {
-        return cvd.version == version;
-      }) ?? defaultCrateVersionData;
+      selected_version.value =
+        crate.value.versions.find((cvd: CrateVersionData) => {
+          return cvd.version == version;
+        }) ?? defaultCrateVersionData;
 
       // Set the default tab to "readme" if a readme is available, else "meta"
-      defaultTab.value = selected_version.value.readme == null ? "meta" : "readme";
+      defaultTab.value =
+        selected_version.value.readme == null ? "meta" : "readme";
     })
     .catch((error) => {
       console.log(error);
@@ -485,7 +768,7 @@ function getCrateAccessData() {
 function setCrateAccessData() {
   const putData = {
     download_restricted: is_download_restricted.value,
-  }
+  };
 
   axios
     .put(CRATE_ACCESS_DATA(crate.value.name), putData)
@@ -515,8 +798,7 @@ function setCrateAccessData() {
 }
 
 function copyTomlToClipboard() {
-  const text =
-    crate.value.name + ' = "' + selected_version.value.version + '"';
+  const text = crate.value.name + ' = "' + selected_version.value.version + '"';
   navigator.clipboard.writeText(text);
 }
 
@@ -525,7 +807,7 @@ function openDocsPage() {
     let url = selected_version.value.documentation;
     window.open(url, "_blank");
   } else {
-    router.push({ name: "PublishDocs" })
+    router.push({ name: "PublishDocs" });
   }
 }
 
@@ -539,15 +821,15 @@ function getAllData() {
 }
 
 onBeforeMount(() => {
-  getAllData()
-})
+  getAllData();
+});
 
 // Watches route changes and reloads the data.
 // Needed, if the query parameter "name=crate" changes.
 watch(route, (_oldRoute, _newRoute) => {
-  getAllData()
-  changeTab(defaultTab.value)
-})
+  getAllData();
+  changeTab(defaultTab.value);
+});
 </script>
 
 <style scoped>
@@ -641,6 +923,11 @@ body[color-theme="dark"] .activeTab {
   font-size: smaller;
 }
 
+.crateMember {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+}
+
 @media only screen and (max-width: 768px) {
   #infoGrid {
     grid-template-rows: auto auto;
@@ -658,5 +945,6 @@ body[color-theme="dark"] .activeTab {
   }
 }
 
-@media only screen and (min-width: 992px) {}
+@media only screen and (min-width: 992px) {
+}
 </style>

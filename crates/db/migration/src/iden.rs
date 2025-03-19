@@ -221,3 +221,14 @@ pub enum GroupUserIden {
     #[iden = "user_fk"]
     UserFk,
 }
+
+#[derive(Iden)]
+pub enum CrateGroupIden {
+    #[iden = "crate_group"]
+    Table,
+    Id,
+    #[iden = "crate_fk"]
+    CrateFk,
+    #[iden = "group_fk"]
+    GroupFk,
+}

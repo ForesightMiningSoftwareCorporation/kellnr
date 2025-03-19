@@ -32,6 +32,8 @@ pub enum Relation {
     CrateAuthorToCrate,
     #[sea_orm(has_many = "super::crate_category_to_crate::Entity")]
     CrateCategoryToCrate,
+    #[sea_orm(has_many = "super::crate_group::Entity")]
+    CrateGroup,
     #[sea_orm(has_many = "super::crate_index::Entity")]
     CrateIndex,
     #[sea_orm(has_many = "super::crate_keyword_to_crate::Entity")]
@@ -53,6 +55,12 @@ impl Related<super::crate_author_to_crate::Entity> for Entity {
 impl Related<super::crate_category_to_crate::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::CrateCategoryToCrate.def()
+    }
+}
+
+impl Related<super::crate_group::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::CrateGroup.def()
     }
 }
 
